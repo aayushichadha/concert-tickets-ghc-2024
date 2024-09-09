@@ -1,0 +1,20 @@
+{
+  "database": {
+    "host": "postgres",
+    "port": 5432,
+    "user": "user",
+    "password": "password",
+    "dbname": "db",
+    "sslmode": "disable"
+  },
+  "service_url": {
+    "payment": "http://payment-app:8082",
+    "catalog": "http://catalog-app:8083"
+  },
+  "api_routes": {
+    "initiate-payment": "/initiate-payment",
+    "get-available-payment-methods": "/get-available-payment-methods",
+    "rollback-payment": "/rollback-payment",
+    "update-catalog": "/update-catalog"
+  }
+}
