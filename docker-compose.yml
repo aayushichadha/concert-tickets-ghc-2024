@@ -17,23 +17,11 @@ services:
     networks:
       - mynetwork
 
-  order-app:
+  ticket-registry-app:
     build:
-      context: ./order  # Set the build context to the 'order' directory
+      context: ./ticket-registry  # Set the build context to the 'order' directory
       dockerfile: Dockerfile  # Specify the name of the Dockerfile
-    container_name: order-app-container
-    depends_on:
-      - postgres
-    ports:
-      - "8080:8080"
-    networks:
-      - mynetwork
-
-  payment-app:
-    build:
-      context: ./payment  # Set the build context to the 'order' directory
-      dockerfile: Dockerfile  # Specify the name of the Dockerfile
-    container_name: payment-app-container
+    container_name: ticket-registry-app-container
     depends_on:
       - postgres
     ports:
@@ -46,4 +34,3 @@ networks:
 
 volumes:
   postgres_data_volume:
-
