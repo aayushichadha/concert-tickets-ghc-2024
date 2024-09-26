@@ -4,7 +4,6 @@ go 1.23.0
 
 require (
 	github.com/gin-gonic/gin v1.10.0
-	github.com/jmcvetta/randutil v0.0.0-20150817122601-2bb1b664bcff
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.12
 )

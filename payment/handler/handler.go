@@ -1,60 +1,30 @@
 package handler
 
 import (
-	"context"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"payment/models"
 	"payment/service"
-	"time"
 )
 
-func InitiatePayment(c *gin.Context) {
-	var payment models.Payment
+func MakePayment(c *gin.Context) {
 
-	// Create a context with a timeout of 5 seconds
-	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	var paymentRequest models.MakePaymentRequest
 
-	if err := c.ShouldBindJSON(&payment); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"Error reading request": err.Error()})
+	if err := c.ShouldBindJSON(&paymentRequest); err != nil {
+		// If binding fails, return an error response
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
-	log.Printf("Recieved a request to initiate payment")
-
-	if err := service.InitiatePayment(payment); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"Error initiating the payment": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": fmt.Sprintf("Payment initiated for OrderID %d, amount %f", payment.OrderID, payment.Amount),
-		"status":  "success",
-	})
-}
-
-func RollbackPayment(c *gin.Context) {
-	var payment models.Payment
-
-	// Create a context with a timeout of 5 seconds
-	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	if err := c.ShouldBindJSON(&payment); err != nil {
+	// Process the payment using the service layer
+	response, err := service.ProcessPayment(paymentRequest)
+	if err != nil {
+		// If there is a business logic error, return the error message
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := service.RollbackPayment(payment); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error rolling back the payment"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": fmt.Sprintf("Payment with ID %d has been rolled back.", payment.ID),
-		"payment": payment,
-	})
+	// Return the successful response in JSON format
+	c.JSON(http.StatusOK, response)
 }

@@ -29,6 +29,16 @@ services:
     networks:
       - mynetwork
 
+  payment-app:
+    build:
+      context: ./payment  # Set the build context to the 'order' directory
+      dockerfile: Dockerfile
+    container_name: payment-app-container
+    ports:
+      - "8081:8081"
+    networks:
+      - mynetwork
+
 networks:
   mynetwork:
 
