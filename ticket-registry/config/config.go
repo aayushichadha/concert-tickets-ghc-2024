@@ -16,15 +16,19 @@ type Config struct {
 	} `json:"database"`
 }
 
-func Load(filename string) (Config, error) {
-	var config Config
-	configFile, err := os.Open(filename)
+func LoadConfig(path string) (*Config, error) {
+	file, err := os.Open(path)
 	if err != nil {
-		return config, err
+		return nil, err
 	}
-	defer configFile.Close()
+	defer file.Close()
 
-	jsonParser := json.NewDecoder(configFile)
-	err = jsonParser.Decode(&config)
-	return config, err
+	decoder := json.NewDecoder(file)
+	config := &Config{}
+	err = decoder.Decode(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return config, nil
 }
