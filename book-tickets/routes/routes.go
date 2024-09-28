@@ -1,10 +1,10 @@
 package routes
 
 import (
+	"book-tickets/handler"
 	"github.com/gin-gonic/gin"
-	"order/handler"
 )
 
 func SetupRoutes(r *gin.Engine) {
-	r.POST("/place-order", handler.PlaceOrder)
+	r.POST("/book-tickets", handler.BookTickets)
 }

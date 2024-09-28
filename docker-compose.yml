@@ -39,6 +39,16 @@ services:
     networks:
       - mynetwork
 
+  book-ticket-app:
+    build:
+      context: ./book-tickets  # Set the build context to the 'order' directory
+      dockerfile: Dockerfile
+    container_name: book-tickets-container
+    ports:
+      - "8083:8083"
+    networks:
+      - mynetwork
+
 networks:
   mynetwork:
 

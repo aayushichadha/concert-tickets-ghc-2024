@@ -1,0 +1,16 @@
+{
+    "database": {
+      "host": "postgres",
+      "port": 5432,
+      "user": "user",
+      "password": "password",
+      "dbname": "db",
+      "sslmode": "disable"
+    },
+    "service_url": {
+      "ticket-registry": "http://book-tickets-app:8082"
+    },
+    "api_routes": {
+      "book-tickets": "/book-tickets"
+    }
+  }
