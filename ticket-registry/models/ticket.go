@@ -12,6 +12,18 @@ type Ticket struct {
 
 type Tickets struct {
 	ID              int
-	TicketType      string
+	TicketType      TicketType
 	CurrentQuantity int
 }
+
+// Define TicketType as its own type
+type TicketType string
+
+// Define possible values for TicketType
+const (
+	VIPFrontRow      TicketType = "VIPFrontRow"
+	PlatinumSeating  TicketType = "PlatinumSeating"
+	GeneralAdmission TicketType = "GeneralAdmission"
+	BalconySeating   TicketType = "BalconySeating"
+	SuperfanPit      TicketType = "SuperfanPit"
+)

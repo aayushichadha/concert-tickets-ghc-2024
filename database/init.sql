@@ -6,4 +6,4 @@ CREATE TABLE IF NOT EXISTS tickets (
 );
 
 INSERT INTO tickets (id, ticket_type, current_quantity)
-VALUES (1, 'VIP', 100), (2, 'General', 200);
+VALUES (1, 'VIPFrontRow', 1000), (2, 'PlatinumSeating', 2000), (3, 'GeneralAdmission', 5000), (4, 'BalconySeating', 1500), (5, 'SuperfanPit', 500);
