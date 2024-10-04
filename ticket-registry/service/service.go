@@ -45,3 +45,15 @@ func adaptToTicketListFormat(getTicketsRequest *models.GetTicketsRequest) (respo
 	}
 	return &resp, nil
 }
+
+func ShowTickets(db *gorm.DB) (response *[]models.Tickets, err error) {
+	ticketsRepo := &repository.TicketRepository{DB: db} // Initialize with actual repository
+
+	tickets, err := ticketsRepo.GetAllTickets()
+	// If no ticket is found, return an error
+	if err != nil {
+		return nil, err
+	}
+
+	return tickets, nil
+}
