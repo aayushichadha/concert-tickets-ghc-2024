@@ -25,3 +25,12 @@ func (repo *TicketRepository) UpdateTickets(tickets *models.Tickets) error {
 	err := repo.DB.Save(tickets).Error
 	return err
 }
+
+func (repo *TicketRepository) GetAllTickets() (*[]models.Tickets, error) {
+	var tickets []models.Tickets
+
+	// Fetch all records from the tickets table
+	err := repo.DB.Find(&tickets).Error
+
+	return &tickets, err
+}
