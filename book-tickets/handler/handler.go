@@ -3,37 +3,36 @@ package handler
 import (
 	"book-tickets/models"
 	"book-tickets/service"
-	"context"
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
-	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
-func BookTickets(c *gin.Context) {
-	// Create a context with a timeout of 5 seconds
-	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+// BookingHandler handles the booking requests
+type BookingHandler struct {
+	BookingService *service.BookingService
+	DB             *gorm.DB
+}
 
-	var bookTicketsRequest *models.BookTicketsRequest
+// BookTickets is the Gin handler that processes ticket booking requests
+func (h *BookingHandler) BookTickets(c *gin.Context) {
+	// Step 1: Bind the request body to BookTicketsRequest struct
+	var bookTicketsRequest models.BookTicketsRequest
 	if err := c.ShouldBindJSON(&bookTicketsRequest); err != nil {
-		log.Printf("Error while parsing order data: %v", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
-	// Log the request for tracking
-
-	db, _ := c.Get("db")
-
-	// Call the service layer to handle the order placement
-	tickets, err := service.BookTickets(db.(*gorm.DB), bookTicketsRequest)
+	// Step 2: Call the BookTickets function in the service layer
+	bookedTickets, err := h.BookingService.BookTickets(h.DB, &bookTicketsRequest)
 	if err != nil {
-		log.Printf("Error fetching tickets: %v", err)
+		log.Println("Error booking tickets:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, tickets)
+	// Step 3: Return the booked tickets in the response
+	c.JSON(http.StatusOK, bookedTickets)
 }

@@ -5,6 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes(r *gin.Engine) {
-	r.POST("/book-tickets", handler.BookTickets)
+// SetupRoutes registers the application routes
+func SetupRoutes(r *gin.Engine, bookingHandler *handler.BookingHandler) {
+	// Register the BookTickets route
+	r.POST("/book-tickets", bookingHandler.BookTickets)
 }

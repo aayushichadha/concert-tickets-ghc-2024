@@ -2,7 +2,7 @@ package models
 
 type MakePaymentRequest struct {
 	UserID        string        `json:"user_id"` // ID of the user making the payment
-	Amount        float64       `json:"amount"`  // Total amount to be paid
+	Amount        float64       `json:"amount"`
 	PaymentMethod PaymentMethod `json:"PaymentMethod"`
 }
 

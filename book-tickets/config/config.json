@@ -1,16 +1,18 @@
 {
-    "database": {
-      "host": "postgres",
-      "port": 5432,
-      "user": "user",
-      "password": "password",
-      "dbname": "db",
-      "sslmode": "disable"
-    },
-    "service_url": {
-      "ticket-registry": "http://book-tickets-app:8082"
-    },
-    "api_routes": {
-      "book-tickets": "/book-tickets"
-    }
+  "database": {
+    "host": "postgres",
+    "port": 5432,
+    "user": "user",
+    "password": "password",
+    "dbname": "db",
+    "sslmode": "disable"
+  },
+  "service_url": {
+    "ticketRegistry": "http://ticket-registry-service:8082",
+    "payment": "http://payment-service:8081"
+  },
+  "api_routes": {
+    "get-tickets": "/get-tickets",
+    "make-payment": "/make-payment"
   }
+}

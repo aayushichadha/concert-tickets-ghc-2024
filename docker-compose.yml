@@ -1,17 +1,13 @@
-version: '3'
+version: '3.8'
+
 services:
   postgres:
-    build:
-      context: ./database
     image: postgres:latest
     container_name: postgres-container
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: db
-    volumes:
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - postgres_data_volume:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
@@ -19,9 +15,8 @@ services:
 
   ticket-registry-app:
     build:
-      context: ./ticket-registry  # Set the build context to the 'order' directory
-      dockerfile: Dockerfile  # Specify the name of the Dockerfile
-    container_name: ticket-registry-app-container
+      context: ./ticket-registry
+    container_name: ticket-registry-service
     depends_on:
       - postgres
     ports:
@@ -31,8 +26,7 @@ services:
 
   payment-app:
     build:
-      context: ./payment  # Set the build context to the 'order' directory
-      dockerfile: Dockerfile
+      context: ./payment
     container_name: payment-app-container
     ports:
       - "8081:8081"
@@ -41,9 +35,10 @@ services:
 
   book-ticket-app:
     build:
-      context: ./book-tickets  # Set the build context to the 'order' directory
-      dockerfile: Dockerfile
+      context: ./book-tickets
     container_name: book-tickets-container
+    depends_on:
+      - postgres
     ports:
       - "8083:8083"
     networks:
@@ -51,6 +46,3 @@ services:
 
 networks:
   mynetwork:
-
-volumes:
-  postgres_data_volume:
