@@ -5,5 +5,5 @@ CREATE TABLE IF NOT EXISTS tickets (
     current_quantity INT NOT NULL
 );
 
-INSERT INTO tickets (ticket_type, current_quantity)
-VALUES ('VIP', 100), ('General', 200);
+INSERT INTO tickets (id, ticket_type, current_quantity)
+VALUES (1, 'VIP', 100), (2, 'General', 200);
