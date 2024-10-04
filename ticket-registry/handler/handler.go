@@ -28,13 +28,6 @@ func GetTicketsForGivenTypeAndQuantity(c *gin.Context) {
 	log.Printf("Received GetTickets request: Type=%s, Quantity=%d", getTicketsRequest.TicketType, getTicketsRequest.Quantity)
 
 	db, _ := c.Get("db")
-	// Retrieve the database object from the context
-	// db, exists := c.Get("db")
-	// if !exists {
-	//     log.Printf("Database connection not found in context")
-	//     c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-	//     return
-	// }
 
 	// Call the service layer to handle the order placement
 	tickets, err := service.GetTicketsForGivenTypeAndQuantity(db.(*gorm.DB), getTicketsRequest)
