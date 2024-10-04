@@ -4,7 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
-	"math/rand"
+	"log"
+	"ticket-registry/mappers"
 	"ticket-registry/models"
 	"ticket-registry/repository"
 )
@@ -12,7 +13,10 @@ import (
 func GetTicketsForGivenTypeAndQuantity(db *gorm.DB, getTicketsRequest *models.GetTicketsRequest) (response *[]models.Ticket, err error) {
 	ticketsRepo := &repository.TicketRepository{DB: db} // Initialize with actual repository
 
-	tickets, err := ticketsRepo.GetTickets(getTicketsRequest.TicketType, getTicketsRequest.Quantity)
+	ticketTypeKey := mappers.AdaptToTicketTypeKey(getTicketsRequest.TicketType)
+	log.Printf("ticketTypeKey value %s", ticketTypeKey)
+
+	tickets, err := ticketsRepo.GetTickets(string(ticketTypeKey), getTicketsRequest.Quantity)
 	// If no ticket is found, return an error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -30,20 +34,8 @@ func GetTicketsForGivenTypeAndQuantity(db *gorm.DB, getTicketsRequest *models.Ge
 	}
 
 	// generate tickets as per quantity and type
-	resp, _ := adaptToTicketListFormat(getTicketsRequest)
+	resp, _ := mappers.AdaptToTicketListFormat(getTicketsRequest)
 	return resp, nil
-}
-
-func adaptToTicketListFormat(getTicketsRequest *models.GetTicketsRequest) (response *[]models.Ticket, err error) {
-	var resp []models.Ticket
-	for i := 0; i < getTicketsRequest.Quantity; i++ {
-		ticket := models.Ticket{
-			TicketID:   rand.Intn(100),
-			TicketType: getTicketsRequest.TicketType,
-		}
-		resp = append(resp, ticket)
-	}
-	return &resp, nil
 }
 
 func ShowTickets(db *gorm.DB) (response *[]models.Tickets, err error) {
