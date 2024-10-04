@@ -7,4 +7,5 @@ import (
 
 func SetupRoutes(r *gin.Engine) {
 	r.GET("/get-tickets", handler.GetTicketsForGivenTypeAndQuantity)
+	r.GET("/show-tickets", handler.ShowTickets)
 }
