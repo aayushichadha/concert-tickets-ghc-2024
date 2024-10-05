@@ -2,6 +2,7 @@ package mappers
 
 import (
 	"math/rand"
+	"strconv"
 	"ticket-registry/models"
 )
 
@@ -9,7 +10,7 @@ func AdaptToTicketListFormat(getTicketsRequest *models.GetTicketsRequest) (respo
 	var resp []models.Ticket
 	for i := 0; i < getTicketsRequest.Quantity; i++ {
 		ticket := models.Ticket{
-			TicketID:   rand.Intn(100),
+			TicketID:   strconv.Itoa(rand.Intn(100)),
 			TicketType: getTicketsRequest.TicketType,
 		}
 		resp = append(resp, ticket)

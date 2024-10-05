@@ -21,10 +21,8 @@ type Tickets struct {
 
 // TicketBooking represents a ticket that has been booked by a user
 type TicketBooking struct {
-	ID      string  `json:"id"`       // Ticket ID (from catalog)
-	UserID  string  `json:"user_id"`  // User who booked the ticket
-	Type    string  `json:"type"`     // Type of ticket (e.g., VIP, Regular)
-	Price   float64 `json:"price"`    // Price of the ticket
-	Seat    string  `json:"seat"`     // Seat number
-	EventID string  `json:"event_id"` // Event associated with the ticket
+	ID     string  `json:"id"`      // Ticket ID (from catalog)
+	UserID string  `json:"user_id"` // User who booked the ticket
+	Type   string  `json:"type"`    // Type of ticket (e.g., VIP, Regular)
+	Price  float64 `json:"price"`   // Price of the ticket
 }
