@@ -3,9 +3,11 @@ package handler
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
+	"ticket-registry/logging"
 	"ticket-registry/models"
 	"ticket-registry/service"
 	"time"
@@ -23,6 +25,11 @@ func GetTicketsForGivenTypeAndQuantity(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	logging.Logger.WithFields(logrus.Fields{
+		"ticket_type": getTicketsRequest.TicketType,
+		"quantity":    getTicketsRequest.Quantity,
+	}).Info("Logging - Received GetTicketsForGivenTypeAndQuantity request")
 
 	// Log the request for tracking
 	log.Printf("Received GetTicketsForGivenTypeAndQuantity request: Type=%s, Quantity=%d", getTicketsRequest.TicketType, getTicketsRequest.Quantity)
