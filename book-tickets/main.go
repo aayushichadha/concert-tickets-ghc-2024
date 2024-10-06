@@ -8,6 +8,7 @@ import (
 	"book-tickets/service"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -38,14 +39,20 @@ func main() {
 		log.Fatalf("Could not create PaymentGateway: %v", err)
 	}
 
+	logger := logrus.New()
+	logger.SetFormatter(&logrus.JSONFormatter{}) // Use JSON format for structured logs
+	logger.SetLevel(logrus.InfoLevel)
+
 	bookingService := &service.BookingService{
 		CatalogGateway: ticketRegistryGateway, // Use the TicketRegistryGateway here
 		PaymentGateway: paymentGateway,
+		Logger:         logger,
 	}
 
 	bookingHandler := &handler.BookingHandler{
 		BookingService: bookingService,
 		DB:             db,
+		Logger:         logger,
 	}
 
 	router := gin.Default()
