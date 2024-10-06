@@ -24,6 +24,7 @@ services:
     container_name: ticket-registry-app-container
     depends_on:
       - postgres
+      - jaeger
     ports:
       - "8082:8082"
     networks:
@@ -38,6 +39,20 @@ services:
       - "8081:8081"
     networks:
       - mynetwork
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger-container
+    ports:
+      - "5775:5775"      # for UDP
+      - "6831:6831"      # for Thrift over UDP
+      - "6832:6832"      # for Thrift over HTTP
+      - "5778:5778"      # for the HTTP endpoint
+      - "16686:16686"    # for the Jaeger UI
+      - "14268:14268"    # for the collector
+      - "14250:14250"    # for the gRPC collector
+    environment:
+      COLLECTOR_ZIPKIN_HTTP_PORT: 9411
 
 networks:
   mynetwork:

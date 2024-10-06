@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/opentracing/opentracing-go"
+	jcnfg "github.com/uber/jaeger-client-go/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -19,6 +21,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not load config: %v", err)
 	}
+
+	initJaeger("ticket-registry")
 
 	router := gin.Default()
 	router.Use(func(c *gin.Context) {
@@ -51,4 +55,18 @@ func setupDB(config config.Config) (*gorm.DB, error) {
 
 	log.Printf("Db connection established")
 	return db, nil
+}
+
+func initJaeger(service string) {
+	cfg, err := jcnfg.FromEnv()
+	if err != nil {
+		log.Fatalf("Error reading Jaeger config from env: %v", err)
+	}
+
+	tracer, closer, err := cfg.New(service)
+	if err != nil {
+		log.Fatalf("Error creating Jaeger tracer: %v", err)
+	}
+	opentracing.SetGlobalTracer(tracer)
+	defer closer.Close()
 }
