@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"net/http"
+	"strconv"
 	"ticket-registry/models"
 	"ticket-registry/service"
 	"time"
@@ -13,29 +14,50 @@ import (
 	"github.com/opentracing/opentracing-go"
 )
 
+type HTTPHeaderReader http.Header
+
+// ForeachKey iterates over all key-value pairs in the HTTP headers
+func (h HTTPHeaderReader) ForeachKey(handler func(key, val string) error) error {
+	for key, values := range h {
+		for _, value := range values {
+			if err := handler(key, value); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 func GetTicketsForGivenTypeAndQuantity(c *gin.Context) {
 
-	span := opentracing.GlobalTracer().StartSpan("GetTicketsForGivenTypeAndQuantity")
+	parentSpanCtx, err := opentracing.GlobalTracer().Extract(opentracing.HTTPHeaders, HTTPHeaderReader(c.Request.Header))
+
+	span := opentracing.GlobalTracer().StartSpan("ServiceB-Request", opentracing.ChildOf(parentSpanCtx))
 	defer span.Finish()
 
 	// Create a context with a timeout of 5 seconds
 	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var getTicketsRequest *models.GetTicketsRequest
-	if err := c.ShouldBindJSON(&getTicketsRequest); err != nil {
-		log.Printf("Error while parsing order data: %v", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	ticketType := c.Query("ticketType")
+	quantityStr := c.Query("quantity")
+
+	quantity, err := strconv.Atoi(quantityStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid quantity value"})
 		return
 	}
 
 	// Log the request for tracking
-	log.Printf("Received GetTicketsForGivenTypeAndQuantity request: Type=%s, Quantity=%d", getTicketsRequest.TicketType, getTicketsRequest.Quantity)
+	log.Printf("Received GetTicketsForGivenTypeAndQuantity request: Type=%s, Quantity=%d", ticketType, quantity)
 
 	db, _ := c.Get("db")
 
 	// Call the service layer to handle the order placement
-	tickets, err := service.GetTicketsForGivenTypeAndQuantity(db.(*gorm.DB), getTicketsRequest)
+	tickets, err := service.GetTicketsForGivenTypeAndQuantity(db.(*gorm.DB), &models.GetTicketsRequest{
+		TicketType: ticketType,
+		Quantity:   quantity,
+	})
 	if err != nil {
 		log.Printf("Error fetching tickets: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -47,8 +69,10 @@ func GetTicketsForGivenTypeAndQuantity(c *gin.Context) {
 
 func ShowTickets(c *gin.Context) {
 
-	span := opentracing.GlobalTracer().StartSpan("ShowTickets")
-	defer span.Finish()
+	// parentSpanCtx, err := tracer.Extract(opentracing.HTTPHeaders, opentracing.TextMapReader(r.Header))
+
+	// span := opentracing.GlobalTracer().StartSpan("ShowTickets")
+	// defer span.Finish()
 
 	// Create a context with a timeout of 5 seconds
 	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)

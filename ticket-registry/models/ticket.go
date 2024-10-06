@@ -6,7 +6,7 @@ type GetTicketsRequest struct {
 }
 
 type Ticket struct {
-	TicketID   int
+	TicketID   string
 	TicketType string
 }
 

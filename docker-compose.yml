@@ -1,4 +1,5 @@
-version: '3'
+version: '3.8'
+
 services:
   postgres:
     build:
@@ -16,25 +17,33 @@ services:
       - "5432:5432"
     networks:
       - mynetwork
+    # healthcheck:
+    #   test: [ "CMD-SHELL", "pg_isready -U user" ]
+    #   interval: 10s
+    #   retries: 5
 
   ticket-registry-app:
     build:
-      context: ./ticket-registry  # Set the build context to the 'order' directory
-      dockerfile: Dockerfile  # Specify the name of the Dockerfile
-    container_name: ticket-registry-app-container
+      context: ./ticket-registry
+    container_name: ticket-registry-service
     depends_on:
       - postgres
       - jaeger
+      # postgres:
+      #   condition: service_healthy
+      # jaeger:
+      #   condition: service_healthy
     ports:
       - "8082:8082"
     networks:
       - mynetwork
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318
 
   payment-app:
     build:
-      context: ./payment  # Set the build context to the 'order' directory
-      dockerfile: Dockerfile
-    container_name: payment-app-container
+      context: ./payment
+    container_name: payment-service
     ports:
       - "8081:8081"
     networks:
@@ -53,6 +62,27 @@ services:
       - "14250:14250"    # for the gRPC collector
     environment:
       COLLECTOR_ZIPKIN_HTTP_PORT: 9411
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:16686"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+
+  book-ticket-app:
+    build:
+      context: ./book-tickets
+    container_name: book-tickets-container
+    depends_on:
+      - postgres
+      - jaeger
+      # postgres:
+      #   condition: service_healthy
+    ports:
+      - "8083:8083"
+    networks:
+      - mynetwork
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318
 
 networks:
   mynetwork:

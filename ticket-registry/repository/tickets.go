@@ -10,7 +10,7 @@ type TicketRepository struct {
 	DB *gorm.DB
 }
 
-// GetCatalogByProductID retrieves and catalog record by product ID from the database.
+// GetTickets retrieves and catalog record by product ID from the database.
 func (repo *TicketRepository) GetTickets(ticketType string, quantity int) (*models.Tickets, error) {
 	var tickets models.Tickets
 	// Query the tickets table based on the type and current quantity

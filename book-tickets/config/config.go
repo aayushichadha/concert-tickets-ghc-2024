@@ -2,10 +2,10 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/spf13/viper"
 	"os"
 	"path/filepath"
-	"fmt"
 )
 
 type Config struct {
@@ -19,17 +19,21 @@ type Config struct {
 	} `json:"database"`
 }
 
-func Load(filename string) (Config, error) {
-	var config Config
-	configFile, err := os.Open(filename)
+func LoadConfig(path string) (*Config, error) {
+	file, err := os.Open(path)
 	if err != nil {
-		return config, err
+		return nil, err
 	}
-	defer configFile.Close()
+	defer file.Close()
 
-	jsonParser := json.NewDecoder(configFile)
-	err = jsonParser.Decode(&config)
-	return config, err
+	decoder := json.NewDecoder(file)
+	config := &Config{}
+	err = decoder.Decode(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return config, nil
 }
 
 func ReadServiceConfig(service string) (string, error) {
@@ -38,18 +42,17 @@ func ReadServiceConfig(service string) (string, error) {
 	if err != nil {
 		fmt.Println("Error getting absolute path:", err)
 	}
-    viper.SetConfigFile(absConfigPath)
+	viper.SetConfigFile(absConfigPath)
 
-    if err := viper.ReadInConfig(); err != nil {
-        return "", err
-    }
+	if err := viper.ReadInConfig(); err != nil {
+		return "", err
+	}
 
-	serviceConfig := "service_url."+service
-    serviceURL := viper.GetString(serviceConfig)
+	serviceConfig := "service_url." + service
+	serviceURL := viper.GetString(serviceConfig)
 
-    return serviceURL, nil
+	return serviceURL, nil
 }
-
 
 func ReadAPIConfig(api string) (string, error) {
 	configFile := "config/config.json"
@@ -57,14 +60,14 @@ func ReadAPIConfig(api string) (string, error) {
 	if err != nil {
 		fmt.Println("Error getting absolute path:", err)
 	}
-    viper.SetConfigFile(absConfigPath)
+	viper.SetConfigFile(absConfigPath)
 
-    if err := viper.ReadInConfig(); err != nil {
-        return "", err
-    }
+	if err := viper.ReadInConfig(); err != nil {
+		return "", err
+	}
 
-	apiConfig := "api_routes."+api
-    apiURL := viper.GetString(apiConfig)
+	apiConfig := "api_routes." + api
+	apiURL := viper.GetString(apiConfig)
 
-    return apiURL, nil
+	return apiURL, nil
 }
