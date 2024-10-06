@@ -1,0 +1,18 @@
+{
+  "database": {
+    "host": "postgres",
+    "port": 5432,
+    "user": "user",
+    "password": "password",
+    "dbname": "db",
+    "sslmode": "disable"
+  },
+  "service_url": {
+    "ticketRegistry": "http://ticket-registry-service:8082",
+    "payment": "http://payment-service:8081"
+  },
+  "api_routes": {
+    "get-tickets": "/get-tickets",
+    "make-payment": "/make-payment"
+  }
+}
