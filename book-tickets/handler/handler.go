@@ -20,34 +20,43 @@ type BookingHandler struct {
 func (h *BookingHandler) BookTickets(c *gin.Context) {
 	var bookTicketsRequest models.BookTicketsRequest
 
-	h.Logger.WithFields(logrus.Fields{
+	// Create a reusable log entry with endpoint and method fields
+	logEntry := h.Logger.WithFields(logrus.Fields{
 		"endpoint": "/book-tickets",
 		"method":   c.Request.Method,
-	}).Info("Received booking request")
+	})
 
+	// Log the incoming request
+	logEntry.Info("Received booking request")
+
+	// Parse the request payload
 	if err := c.ShouldBindJSON(&bookTicketsRequest); err != nil {
-		h.Logger.WithFields(logrus.Fields{
-			"error": err.Error(),
-		}).Warn("Invalid request payload")
+		logEntry.WithField("error", err.Error()).Warn("Invalid request payload")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
-	h.Logger.WithFields(logrus.Fields{
+	// Add user-specific context to the log entry
+	logEntry = logEntry.WithFields(logrus.Fields{
 		"user_id":    bookTicketsRequest.User.Id,
 		"ticketType": bookTicketsRequest.Tickets.Type,
 		"quantity":   bookTicketsRequest.Tickets.Quantity,
-	}).Info("Processing booking request")
+	})
 
+	// Log processing of the booking request
+	logEntry.Info("Processing booking request")
+
+	// Call the service layer to handle the booking
 	bookedTickets, err := h.BookingService.BookTickets(h.DB, h.Logger, &bookTicketsRequest)
 	if err != nil {
-		h.Logger.WithFields(logrus.Fields{
-			"user_id": bookTicketsRequest.User.Id,
-			"error":   err.Error(),
-		}).Error("Error booking tickets")
+		logEntry.WithField("error", err.Error()).Error("Error booking tickets")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	// Log successful ticket booking
+	logEntry.Info("Tickets successfully booked")
+
+	// Return the successful response
 	c.JSON(http.StatusOK, bookedTickets)
 }

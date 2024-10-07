@@ -19,12 +19,15 @@ type BookingService struct {
 func (s *BookingService) BookTickets(db *gorm.DB, logger *logrus.Logger, bookTicketsRequest *models.BookTicketsRequest) (response *[]models.TicketBooking, err error) {
 	var bookedTickets []models.TicketBooking
 
-	// Log start of ticket booking
-	logger.WithFields(logrus.Fields{
+	// Create a reusable log entry with user details and ticket info
+	logEntry := logger.WithFields(logrus.Fields{
 		"user_id":    bookTicketsRequest.User.Id,
 		"ticketType": bookTicketsRequest.Tickets.Type,
 		"quantity":   bookTicketsRequest.Tickets.Quantity,
-	}).Info("Starting ticket booking process")
+	})
+
+	// Log start of ticket booking
+	logEntry.Info("Starting ticket booking process")
 
 	// Fetch available tickets
 	getTicketsRequest := &models.GetTicketsRequest{
@@ -34,20 +37,15 @@ func (s *BookingService) BookTickets(db *gorm.DB, logger *logrus.Logger, bookTic
 
 	tickets, err := s.CatalogGateway.GetTicketsForGivenTypeAndQuantity(getTicketsRequest)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"user_id":    bookTicketsRequest.User.Id,
-			"ticketType": bookTicketsRequest.Tickets.Type,
-		}).Error("Error fetching tickets", err)
+		logEntry.Error("Error fetching tickets", err)
 		return nil, err
 	}
 
 	// Check if enough tickets are available
 	if len(tickets) < bookTicketsRequest.Tickets.Quantity {
-		logger.WithFields(logrus.Fields{
-			"user_id":    bookTicketsRequest.User.Id,
-			"ticketType": bookTicketsRequest.Tickets.Type,
-			"requested":  bookTicketsRequest.Tickets.Quantity,
-			"available":  len(tickets),
+		logEntry.WithFields(logrus.Fields{
+			"requested": bookTicketsRequest.Tickets.Quantity,
+			"available": len(tickets),
 		}).Warn("Not enough tickets available")
 		return nil, errors.New("not enough tickets available")
 	}
@@ -61,8 +59,7 @@ func (s *BookingService) BookTickets(db *gorm.DB, logger *logrus.Logger, bookTic
 
 	err = s.PaymentGateway.MakePayment(paymentRequest)
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"user_id":     bookTicketsRequest.User.Id,
+		logEntry.WithFields(logrus.Fields{
 			"amount":      paymentRequest.Amount,
 			"paymentType": paymentRequest.PaymentMethod.Type,
 		}).Error("Error processing payment", err)
@@ -80,10 +77,7 @@ func (s *BookingService) BookTickets(db *gorm.DB, logger *logrus.Logger, bookTic
 		}
 
 		if err := tx.Create(&bookedTicket).Error; err != nil {
-			logger.WithFields(logrus.Fields{
-				"user_id":   bookTicketsRequest.User.Id,
-				"ticket_id": bookedTicket.ID,
-			}).Error("Error saving booked ticket", err)
+			logEntry.WithField("ticket_id", bookedTicket.ID).Error("Error saving booked ticket", err)
 			tx.Rollback()
 			return nil, err
 		}
@@ -91,16 +85,12 @@ func (s *BookingService) BookTickets(db *gorm.DB, logger *logrus.Logger, bookTic
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		logger.WithFields(logrus.Fields{
-			"user_id": bookTicketsRequest.User.Id,
-		}).Error("Error committing transaction", err)
+		logEntry.Error("Error committing transaction", err)
 		return nil, err
 	}
 
-	logger.WithFields(logrus.Fields{
-		"user_id":        bookTicketsRequest.User.Id,
-		"tickets_booked": len(bookedTickets),
-	}).Info("Tickets successfully booked")
+	// Log successful ticket booking
+	logEntry.WithField("tickets_booked", len(bookedTickets)).Info("Tickets successfully booked")
 
 	return &bookedTickets, nil
 }

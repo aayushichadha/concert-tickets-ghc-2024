@@ -30,18 +30,18 @@ func main() {
 		log.Fatalf("Could not set up database connection: %v", err)
 	}
 
-	ticketRegistryGateway, err := gateways.NewTicketRegistryGateway()
-	if err != nil {
-		log.Fatalf("Could not create TicketRegistryGateway: %v", err)
-	}
-	paymentGateway, err := gateways.NewPaymentGateway()
-	if err != nil {
-		log.Fatalf("Could not create PaymentGateway: %v", err)
-	}
-
 	logger := logrus.New()
 	logger.SetFormatter(&logrus.JSONFormatter{}) // Use JSON format for structured logs
 	logger.SetLevel(logrus.InfoLevel)
+
+	ticketRegistryGateway, err := gateways.NewTicketRegistryGateway(logger)
+	if err != nil {
+		log.Fatalf("Could not create TicketRegistryGateway: %v", err)
+	}
+	paymentGateway, err := gateways.NewPaymentGateway(logger)
+	if err != nil {
+		log.Fatalf("Could not create PaymentGateway: %v", err)
+	}
 
 	bookingService := &service.BookingService{
 		CatalogGateway: ticketRegistryGateway, // Use the TicketRegistryGateway here
