@@ -7,7 +7,32 @@ This is a concert ticket booking application. The user can purchase different ty
 
 **Section-1**
 
-Run the following command to purchase the concert ticket for the Taylor Swift concert:
+## Step 1: Prerequisites - Ensure Docker is installed on your machine:
+
+**macOS:** Use Homebrew to install Docker Desktop.
+
+```
+brew install --cask docker
+```
+
+**Windows:** Download Docker Desktop from the official Docker website.
+**Linux:** Follow Docker installation instructions specific to your distribution.
+
+## Setp 2: Clone Repo
+
+```
+git clone <repository-url>
+```
+
+## Step 3:  Bring up the docker
+
+```
+cd <dproject-directory>
+
+docker-compose up --build
+```
+
+## Step 4: Run the command to purchase the concert ticket for the concert:
 
 ```
 curl -X POST http://localhost:8083/book-tickets \
@@ -30,5 +55,7 @@ curl -X POST http://localhost:8083/book-tickets \
       }'
 ```
 
+
+**Section-2**
 
 
