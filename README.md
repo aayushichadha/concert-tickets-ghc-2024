@@ -99,7 +99,12 @@ Can you identify the issue now?
 ## (Optional) Section-4
 
 **Step-1**
-Make the changes to fix the code
+Make the changes to fix the code and restart the docker by following commands:
+
+```
+docker-compose down
+docker-compose up --build
+```
 
 
 **Step-2**
