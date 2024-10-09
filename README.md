@@ -64,13 +64,7 @@ Navigate to the terminal where docker is running and observe the logs.
 
 ## Section-3
 
-**Step 1: Add the missing logs - Open the following files in IDE of your choice and add the below mentioned logs**
-
-1. ticket-registry/service/service.go
-
-```
-logEntry.WithField("ticketTypeKey", ticketTypeKey).Info("ticketTypeKey value")
-```
+**Step 1: Add the missing logs - Go through the code and add more logs to debug and find out the issue**
 
 (continue)
 
@@ -97,7 +91,7 @@ curl -X POST http://localhost:8083/book-tickets \
       }'
 ```
 
-**Step 3: Navigate to tab where docker is running & observe the logs again.**
+**Step 3: Navigate to tab where docker is running & observe the enhanced logs.**
 
 Can you identify the issue now?
 
@@ -105,7 +99,7 @@ Can you identify the issue now?
 ## (Optional) Section-4
 
 **Step-1**
-Open ticket-registry/mappers/tickets.go in an IDE and make the following changes to fix the code:
+Make the changes to fix the code
 
 
 **Step-2**
