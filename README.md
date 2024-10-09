@@ -80,7 +80,7 @@ curl -X POST http://localhost:8083/book-tickets \
           "dob": "1990-05-15"
         },
         "ticket": {
-          "type": "VIP",
+          "type": "general-admission",
           "quantity": 2
         },
         "payment_method": {
