@@ -7,6 +7,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"net/http"
+
+	"go.opentelemetry.io/otel/trace"
 )
 
 // BookingHandler handles the booking requests
@@ -14,10 +16,14 @@ type BookingHandler struct {
 	BookingService *service.BookingService
 	DB             *gorm.DB
 	Logger         *logrus.Logger
+	Tracer         trace.Tracer
 }
 
 // BookTickets is the Gin handler that processes ticket booking requests
 func (h *BookingHandler) BookTickets(c *gin.Context) {
+	ctx, span := h.Tracer.Start(c.Request.Context(), "BookTickets")
+	defer span.End()
+
 	var bookTicketsRequest models.BookTicketsRequest
 
 	// Create a reusable log entry with endpoint and method fields
@@ -47,7 +53,7 @@ func (h *BookingHandler) BookTickets(c *gin.Context) {
 	logEntry.Info("Processing booking request")
 
 	// Call the service layer to handle the booking
-	bookedTickets, err := h.BookingService.BookTickets(h.DB, h.Logger, &bookTicketsRequest)
+	bookedTickets, err := h.BookingService.BookTickets(ctx, h.DB, h.Logger, &bookTicketsRequest)
 	if err != nil {
 		logEntry.WithField("error", err.Error()).Error("Error booking tickets")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

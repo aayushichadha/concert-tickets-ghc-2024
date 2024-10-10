@@ -3,6 +3,7 @@ package gateways
 import (
 	"book-tickets/config"
 	"book-tickets/models"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,7 +15,7 @@ import (
 
 // TicketRegistryGateway interface for interacting with the ticket registry
 type TicketRegistryGateway interface {
-	GetTicketsForGivenTypeAndQuantity(request *models.GetTicketsRequest) ([]models.Ticket, error)
+	GetTicketsForGivenTypeAndQuantity(ctx context.Context, request *models.GetTicketsRequest) ([]models.Ticket, error)
 }
 
 // TicketRegistryGatewayImpl is the concrete implementation of TicketRegistryGateway
@@ -51,13 +52,33 @@ func NewTicketRegistryGateway(logger *logrus.Logger) (TicketRegistryGateway, err
 }
 
 // GetTicketsForGivenTypeAndQuantity fetches tickets from the ticket registry service
-func (c *TicketRegistryGatewayImpl) GetTicketsForGivenTypeAndQuantity(request *models.GetTicketsRequest) ([]models.Ticket, error) {
+func (c *TicketRegistryGatewayImpl) GetTicketsForGivenTypeAndQuantity(ctx context.Context, request *models.GetTicketsRequest) ([]models.Ticket, error) {
 
 	// Build the full URL for the get-tickets API
 	getTicketsURL := fmt.Sprintf("%s%s?ticketType=%s&quantity=%d", c.ticketRegistryServiceURL, c.getTicketsRoute, request.TicketType, request.Quantity)
 
 	// Make the HTTP GET request
-	resp, err := http.Get(getTicketsURL)
+	// resp, err := http.Get(getTicketsURL)
+	// if err != nil {
+	// 	c.Logger.WithFields(logrus.Fields{
+	// 		"error": err.Error(),
+	// 		"url":   getTicketsURL,
+	// 	}).Error("Error making GET request to ticket registry")
+	// 	return nil, err
+	// }
+	// defer resp.Body.Close()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getTicketsURL, nil)
+	if err != nil {
+		c.Logger.WithFields(logrus.Fields{
+			"error": err.Error(),
+			"url":   getTicketsURL,
+		}).Error("Error creating GET request to ticket registry")
+		return nil, err
+	}
+
+	// Make the HTTP request
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		c.Logger.WithFields(logrus.Fields{
 			"error": err.Error(),

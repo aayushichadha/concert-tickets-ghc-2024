@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 	"gorm.io/gorm"
 	"net/http"
 	"strconv"
@@ -17,6 +19,13 @@ func GetTicketsForGivenTypeAndQuantity(c *gin.Context) {
 	// Create a context with a timeout of 5 seconds
 	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
+	ctx := c.Request.Context()
+
+	tracer := otel.Tracer("service-b")
+	var span trace.Span
+	ctx, span = tracer.Start(ctx, "GetTicketsForGivenTypeAndQuantity")
+	defer span.End()
 
 	ticketType := c.Query("ticketType")
 	quantityStr := c.Query("quantity")

@@ -3,6 +3,7 @@ package service
 import (
 	"book-tickets/gateways"
 	"book-tickets/models"
+	"context"
 	"errors"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -16,7 +17,7 @@ type BookingService struct {
 }
 
 // BookTickets implements the business logic for booking tickets
-func (s *BookingService) BookTickets(db *gorm.DB, logger *logrus.Logger, bookTicketsRequest *models.BookTicketsRequest) (response *[]models.TicketBooking, err error) {
+func (s *BookingService) BookTickets(ctx context.Context, db *gorm.DB, logger *logrus.Logger, bookTicketsRequest *models.BookTicketsRequest) (response *[]models.TicketBooking, err error) {
 	var bookedTickets []models.TicketBooking
 
 	// Create a reusable log entry with user details and ticket info
@@ -35,7 +36,7 @@ func (s *BookingService) BookTickets(db *gorm.DB, logger *logrus.Logger, bookTic
 		Quantity:   bookTicketsRequest.Tickets.Quantity,
 	}
 
-	tickets, err := s.CatalogGateway.GetTicketsForGivenTypeAndQuantity(getTicketsRequest)
+	tickets, err := s.CatalogGateway.GetTicketsForGivenTypeAndQuantity(ctx, getTicketsRequest)
 	if err != nil {
 		logEntry.Error("Error fetching tickets", err)
 		return nil, err

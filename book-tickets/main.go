@@ -13,6 +13,8 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"path/filepath"
+
+	"go.opentelemetry.io/otel"
 )
 
 func main() {
@@ -34,6 +36,8 @@ func main() {
 	logger.SetFormatter(&logrus.JSONFormatter{}) // Use JSON format for structured logs
 	logger.SetLevel(logrus.InfoLevel)
 
+	tracer := otel.Tracer("service-a")
+
 	ticketRegistryGateway, err := gateways.NewTicketRegistryGateway(logger)
 	if err != nil {
 		log.Fatalf("Could not create TicketRegistryGateway: %v", err)
@@ -53,6 +57,7 @@ func main() {
 		BookingService: bookingService,
 		DB:             db,
 		Logger:         logger,
+		Tracer:         tracer,
 	}
 
 	router := gin.Default()
@@ -82,3 +87,29 @@ func setupDB(config config.Config) (*gorm.DB, error) {
 	log.Printf("Db connection established")
 	return db, nil
 }
+
+// Init returns an instance of Jaeger Tracer.
+// func initiateTracer(service string) trace.Tracer {
+// 	client := otlptracegrpc.NewClient(
+// 		otlptracegrpc.WithInsecure(),
+// 	)
+// 	exporter, err := otlptrace.New(client)
+// 	if err != nil {
+// 		log.Fatal("creating OTLP trace exporter: %w", err)
+// 	}
+
+// 	tp := sdktrace.NewTracerProvider(
+// 		sdktrace.WithBatcher(exporter),
+// 		sdktrace.WithResource(newResource(service)),
+// 	)
+
+// 	return tp.Tracer(service)
+// }
+
+// func newResource(service string) *resource.Resource {
+// 	return resource.NewWithAttributes(
+// 		semconv.SchemaURL,
+// 		semconv.ServiceName(service),
+// 		semconv.ServiceVersion("0.0.1"),
+// 	)
+// }
