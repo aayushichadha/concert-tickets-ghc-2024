@@ -52,6 +52,11 @@ func NewTicketRegistryGateway(logger *logrus.Logger) (TicketRegistryGateway, err
 
 // GetTicketsForGivenTypeAndQuantity fetches tickets from the ticket registry service
 func (c *TicketRegistryGatewayImpl) GetTicketsForGivenTypeAndQuantity(request *models.GetTicketsRequest) ([]models.Ticket, error) {
+	// Log the start of fetching tickets
+	c.Logger.WithFields(logrus.Fields{
+		"ticketType": request.TicketType,
+		"quantity":   request.Quantity,
+	}).Info("Fetching tickets from ticket registry")
 
 	// Build the full URL for the get-tickets API
 	getTicketsURL := fmt.Sprintf("%s%s?ticketType=%s&quantity=%d", c.ticketRegistryServiceURL, c.getTicketsRoute, request.TicketType, request.Quantity)
@@ -84,6 +89,12 @@ func (c *TicketRegistryGatewayImpl) GetTicketsForGivenTypeAndQuantity(request *m
 		return nil, errors.New(string(body))
 	}
 
+	// Log success in fetching tickets
+	c.Logger.WithFields(logrus.Fields{
+		"url": getTicketsURL,
+	}).Info("Successfully fetched tickets from ticket registry")
+
+	// Parse the response body into []models.Ticket
 	var tickets []models.Ticket
 	if err := json.NewDecoder(resp.Body).Decode(&tickets); err != nil {
 		c.Logger.WithFields(logrus.Fields{
@@ -92,5 +103,6 @@ func (c *TicketRegistryGatewayImpl) GetTicketsForGivenTypeAndQuantity(request *m
 		return nil, err
 	}
 
+	// Return the tickets
 	return tickets, nil
 }
