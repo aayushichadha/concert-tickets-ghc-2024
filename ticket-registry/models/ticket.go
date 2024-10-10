@@ -21,9 +21,9 @@ type TicketType string
 
 // Define possible values for TicketType
 const (
-	VIPFrontRow      TicketType = "VIPFrontRow"
-	PlatinumSeating  TicketType = "PlatinumSeating"
-	GeneralAdmission TicketType = "GeneralAdmission"
-	BalconySeating   TicketType = "BalconySeating"
-	SuperfanPit      TicketType = "SuperfanPit"
+	VIPFrontRow       TicketType = "VIPFrontRow"
+	PlatinumSeats     TicketType = "PlatinumSeats"
+	GeneralAdmissions TicketType = "GeneralAdmissions"
+	BalconySeat       TicketType = "BalconySeat"
+	SuperfanPit       TicketType = "SuperfanPit"
 )
