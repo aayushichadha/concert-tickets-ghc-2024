@@ -16,6 +16,7 @@ brew install --cask docker
 ```
 
 **Windows:** Download Docker Desktop from the official Docker website.
+
 **Linux:** Follow Docker installation instructions specific to your distribution.
 
 **Step 2: Clone Repo**
