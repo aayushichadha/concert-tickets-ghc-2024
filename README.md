@@ -22,13 +22,13 @@ brew install --cask docker
 **Step 2: Clone Repo**
 
 ```
-git clone <repository-url>
+git clone https://github.com/aayushichadha/concert-tickets-ghc-2024.git
 ```
 
 **Step 3:  Bring up the docker**
 
 ```
-cd <project-directory>
+cd concert-tickets-ghc-2024
 
 docker-compose up --build
 ```
@@ -81,7 +81,7 @@ curl -X POST http://localhost:8083/book-tickets \
           "dob": "1990-05-15"
         },
         "ticket": {
-          "type": "VIP",
+          "type": "general-admission",
           "quantity": 2
         },
         "payment_method": {
