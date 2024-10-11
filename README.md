@@ -9,15 +9,20 @@ This is a concert ticket booking application. The user can purchase different ty
 
 **Step 1: Prerequisites - Ensure Docker is installed on your machine:**
 
+Visit official [docker-website]([Docker website](https://www.docker.com/products/docker-desktop/)) to download Docker or use the commands below.
+
 **macOS:** Use Homebrew to install Docker Desktop.
 
 ```
 brew install --cask docker
 ```
 
-**Windows:** Download Docker Desktop from the official Docker website.
-
 **Linux:** Follow Docker installation instructions specific to your distribution.
+
+```
+sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io
+```
 
 **Step 2: Clone Repo**
 
@@ -36,8 +41,6 @@ docker-compose up --build
 **Step 4: In another tab, run the command to purchase the concert ticket for the concert:**
 
 ```
-cd <project-directory>
-
 curl -X POST http://localhost:8083/book-tickets \
   -H "Content-Type: application/json" \
   -d '{
