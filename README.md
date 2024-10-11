@@ -64,7 +64,16 @@ curl -X POST http://localhost:8083/book-tickets \
 
 ## Section-2
 
-Navigate to the terminal where docker is running and observe the logs.
+Step 1: Navigate to the terminal where docker is running and observe the logs.
+
+Step 2: Let's check which tickets are available for the concert. Run the following command:
+
+```
+
+curl -X GET "http://localhost:8082/show-tickets"
+
+```
+
 
 ## Section-3
 
