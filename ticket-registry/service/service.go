@@ -20,13 +20,9 @@ func GetTicketsForGivenTypeAndQuantity(
 		"quantity":   getTicketsRequest.Quantity,
 	})
 
-	// Log the payment request details
-	logEntry.Info("Processing get-tickets request")
-
 	ticketsRepo := &repository.TicketRepository{DB: db} // Initialize with actual repository
 
 	ticketTypeKey := mappers.AdaptToTicketTypeKey(getTicketsRequest.TicketType)
-	logEntry.WithField("ticketTypeKey", ticketTypeKey).Info("ticketTypeKey value")
 
 	tickets, err := ticketsRepo.GetTickets(string(ticketTypeKey), getTicketsRequest.Quantity)
 	// If no ticket is found, return an error
@@ -56,8 +52,6 @@ func GetTicketsForGivenTypeAndQuantity(
 }
 
 func ShowTickets(db *gorm.DB, logger *logrus.Logger) (response *[]models.Tickets, err error) {
-	logrus.Info("Processing show-tickets request")
-
 	ticketsRepo := &repository.TicketRepository{DB: db} // Initialize with actual repository
 
 	tickets, err := ticketsRepo.GetAllTickets()
@@ -66,8 +60,6 @@ func ShowTickets(db *gorm.DB, logger *logrus.Logger) (response *[]models.Tickets
 		logrus.WithField("error", err.Error()).Error("tickets not available")
 		return nil, err
 	}
-
-	logrus.Info("Processed show-tickets request")
 
 	return tickets, nil
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"log"
 	"path/filepath"
 	"ticket-registry/config"
@@ -44,7 +45,9 @@ func setupDB(config config.Config) (*gorm.DB, error) {
 		config.Database.Password, config.Database.DBName, config.Database.SSLMode,
 	)
 
-	db, err := gorm.Open(postgres.Open(connectionString), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(connectionString), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		return nil, err
 	}
