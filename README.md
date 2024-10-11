@@ -9,7 +9,7 @@ This is a concert ticket booking application. The user can purchase different ty
 
 **Step 1: Prerequisites - Ensure Docker is installed on your machine:**
 
-Visit official [docker-website]([Docker website](https://www.docker.com/products/docker-desktop/)) to download Docker or use the commands below.
+Visit official ([Docker website](https://www.docker.com/products/docker-desktop/)) to download Docker or use the commands below.
 
 **macOS:** Use Homebrew to install Docker Desktop.
 
