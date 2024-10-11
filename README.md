@@ -77,9 +77,22 @@ curl -X GET "http://localhost:8082/show-tickets"
 
 ## Section-3
 
-**Step 1: Add the missing logs - Go through the code and add more logs to debug and find out the issue**
+**Step 1: Add the missing logs - Open the following files in IDE of your choice and add the below mentioned logs to ticket-registry/repository/tickets.go**
 
-(continue)
+
+```
+import "github.com/sirupsen/logrus"
+```
+
+
+```
+func (repo *TicketRepository) GetTickets(ticketType string, quantity int) (*models.Tickets, error) {
+    // Add logs here
+    var log = logrus.New()
+    log.WithFields(logrus.Fields{ "ticketType": ticketType, "quantity": quantity, }).Info("Parameters for querying tickets")
+   ...
+}
+```
 
 **Step 2: Run the following command again to purchase your concert tickets**
 
@@ -112,7 +125,26 @@ Can you identify the issue now?
 ## (Optional) Section-4
 
 **Step-1**
-Make the changes to fix the code and restart the docker by following commands:
+
+Open ticket-registry/models/ticket.go and correct the mapping
+```
+GeneralAdmissions TicketType = "GeneralAdmission"
+```
+
+(Optional) Make spelling corrections
+
+``` 
+GeneralAdmission TicketType = "GeneralAdmission"
+```
+
+Open ticket-registry/mappers/tickets.go
+
+```
+case "general-admission":
+return models.GeneralAdmission
+```
+
+Restart the docker by following commands:
 
 ```
 docker-compose down
